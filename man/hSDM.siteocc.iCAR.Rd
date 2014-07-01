@@ -1,38 +1,73 @@
-\name{hSDM.poisson.iCAR}
-\alias{hSDM.poisson.iCAR}
+\name{hSDM.siteocc.iCAR}
+\alias{hSDM.siteocc.iCAR}
 
-\title{Poisson log regression model with CAR process}
+\title{Site-occupancy model with CAR process}
 
-\description{The \code{hSDM.poisson.iCAR} function performs a Poisson
-  log regression in a hierarchical Bayesian framework. The
-  suitability process includes a spatial correlation process. The
-  spatial correlation is modelled using an intrinsic CAR model. The
-  \code{hSDM.poisson.iCAR} function calls a Gibbs sampler written in C
-  code which uses an adaptive Metropolis algorithm to estimate the
-  conditional posterior distribution of hierarchical model's
-  parameters.}
+\description{The \code{hSDM.siteocc.iCAR} function can be used to model
+  species distribution including different processes in a hierarchical
+  Bayesian framework: a \eqn{\mathcal{B}ernoulli}{Bernoulli} suitability
+  process (refering to environmental suitability) which takes into
+  account the spatial dependence of the observations, and a
+  \eqn{\mathcal{B}ernoulli}{Bernoulli} observability process (refering
+  to various ecological and methodological issues explaining the species
+  detection). The \code{hSDM.siteocc.iCAR} function calls a Gibbs
+  sampler written in C code which uses an adaptive Metropolis algorithm
+  to estimate the conditional posterior distribution of hierarchical
+  model's parameters.}
 
-\usage{hSDM.poisson.iCAR(counts, suitability, spatial.entity, data,
-n.neighbors, neighbors, suitability.pred=NULL, spatial.entity.pred=NULL,
-burnin = 5000, mcmc = 10000, thin = 10, beta.start, Vrho.start, mubeta =
-0, Vbeta = 1e+06, priorVrho = "1/Gamma", shape = 0.5, rate = 0.0005,
-Vrho.max=1000, seed = 1234, verbose = 1, save.rho = 0, save.p = 0)}
+\usage{hSDM.siteocc.iCAR(# Observations
+                         presence, observability, site, data.observability,
+                         # Habitat
+                         suitability, data.suitability,
+                         # Spatial structure
+                         spatial.entity,
+                         n.neighbors, neighbors,
+                         # Predictions
+                         suitability.pred = NULL, spatial.entity.pred = NULL,
+                         # Chains
+                         burnin = 1000, mcmc = 1000, thin = 1,
+                         # Starting values
+                         beta.start,
+                         gamma.start,
+                         Vrho.start,
+                         # Priors
+                         mubeta = 0, Vbeta = 1.0E6,
+                         mugamma = 0, Vgamma = 1.0E6,
+                         priorVrho = "1/Gamma",
+                         shape = 0.5, rate = 0.0005,
+                         Vrho.max = 1000,
+                         # Various
+                         seed = 1234, verbose = 1,
+                         save.rho = 0, save.p = 0)}
+
 
 \arguments{
   
-  \item{counts}{A vector indicating the count (or abundance) for each
-    observation.}
+  \item{presence}{A vector indicating the presence/absence for each observation.}
+
+  \item{observability}{A one-sided formula of the form
+    \eqn{\sim w_1+...+w_q}{'~w_1+...+w_q'} with \eqn{q} terms specifying the
+    explicative variables for the observability process.}
+
+  \item{site}{A vector indicating the site identifier (from one to the
+    total number of sites) for each observation. Several observations
+    can occur at one site. A site can be a raster cell for example.}
+  
+  \item{data.observability}{A data frame containing the model's
+    variables for the observability process.}
 
   \item{suitability}{A one-sided formula of the form
     \eqn{\sim x_1+...+x_p}{'~x_1+...+x_p'} with \eqn{p} terms specifying the
     explicative variables for the suitability process.}
 
-  \item{spatial.entity}{A vector indicating the spatial entity
-    identifier (from one to the total number of entities) for each
-    observation. Several observations can occur in one spatial entity. A
-    spatial entity can be a raster cell for example.}
-
-  \item{data}{A data frame containing the model's variables.}
+  \item{data.suitability}{A data frame containing the model's
+    variables for the suitability process.}
+  
+  \item{spatial.entity}{A vector (of length 'nsite') indicating the
+    spatial entity identifier for each site. Values must be between 1
+    and the total number of spatial entities. Several sites can be found
+    in one spatial entity. A spatial entity can be a raster cell for
+    example.}
 
   \item{n.neighbors}{A vector of integers that indicates the number of
     neighbors (adjacent entities) of each spatial
@@ -67,6 +102,10 @@ Vrho.max=1000, seed = 1234, verbose = 1, save.rho = 0, save.p = 0)}
   \item{beta.start}{Starting values for \eqn{\beta}{beta} parameters of
     the suitability process. This can either be a scalar or a
     \eqn{p}-length vector.}
+
+  \item{gamma.start}{Starting values for \eqn{\beta}{gamma} parameters
+    of the observability process. This can either be a scalar or a
+    \eqn{q}-length vector.}
   
   \item{Vrho.start}{Positive scalar indicating the starting value for the
     variance of the spatial random effects.}
@@ -83,6 +122,19 @@ Vrho.max=1000, seed = 1234, verbose = 1, save.rho = 0, save.p = 0)}
   then that value will serve as the prior variance for all of the
   betas. The default variance is large and set to 1.0E6 for an
   uninformative flat prior.}
+
+  \item{mugamma}{Means of the Normal priors for the \eqn{\gamma}{gamma}
+  parameters of the observability process. \code{mugamma} must be either
+  a scalar or a p-length vector. If \code{mugamma} takes a scalar value,
+  then that value will serve as the prior mean for all of the
+  gammas. The default value is set to 0 for an uninformative prior.}
+
+  \item{Vgamma}{Variances of the Normal priors for the
+  \eqn{\gamma}{gamma} parameters of the observability
+  process. \code{Vgamma} must be either a scalar or a p-length
+  vector. If \code{Vgamma} takes a scalar value, then that value will
+  serve as the prior variance for all of the gammas. The default
+  variance is large and set to 1.0E6 for an uninformative flat prior.}
 
   \item{priorVrho}{Type of prior for the variance of the spatial random
   effects. Can be set to a fixed positive scalar, or to an inverse-gamma
@@ -117,7 +169,7 @@ Vrho.max=1000, seed = 1234, verbose = 1, save.rho = 0, save.p = 0)}
 
   \item{save.p}{A switch (0,1) which determines whether or not the
     sampled values for predictions are saved. Default is 0: the
-    posterior mean is computed and returned in the \code{lambda.pred}
+    posterior mean is computed and returned in the \code{theta.pred}
     vector. Be careful, setting \code{save.p} to 1 might require a large
     amount of memory.}
 
@@ -128,8 +180,9 @@ Vrho.max=1000, seed = 1234, verbose = 1, save.rho = 0, save.p = 0)}
   \item{mcmc}{An mcmc object that contains the posterior sample. This
     object can be summarized by functions provided by the coda
     package. The posterior sample of the deviance \eqn{D}{D}, with
-    \eqn{D=-2\log(\prod_i P(y_i|...))}{D=-2log(prod_i P(y_i|...))}, is
-    also provided.}
+    \eqn{D=-2\log(\prod_i P(y_i,z_i|...))}{%
+      D=-2log(prod_i P(y_i,z_i|...))}, is also
+    provided.}
 
   \item{rho.pred}{If \code{save.rho} is set to 0 (default),
     \code{rho.pred} is the predictive posterior mean of the spatial
@@ -138,30 +191,36 @@ Vrho.max=1000, seed = 1234, verbose = 1, save.rho = 0, save.p = 0)}
     values for each spatial random effect associated to each spatial
     entity.}
 
-  \item{lambda.pred}{If \code{save.p} is set to 0 (default),
-    \code{lambda.pred} is the predictive posterior mean of the abundance
-    associated to the suitability process for each prediction. If
-    \code{save.p} is set to 1, \code{lambda.pred} is an \code{mcmc}
-    object with sampled values of the abundance associated to the
-    suitability process for each prediction.}
+  \item{theta.pred}{If \code{save.p} is set to 0 (default),
+    \code{theta.pred} is the predictive posterior mean of the
+    probability associated to the suitability process for each
+    prediction. If \code{save.p} is set to 1, \code{theta.pred} is an
+    \code{mcmc} object with sampled values of the probability associated
+    to the suitability process for each prediction.}
   
-  \item{lambda.latent}{Predictive posterior mean of the abundance
-    associated to the suitability process for each observation.}
+  \item{theta.latent}{Predictive posterior mean of the probability
+    associated to the suitability process for each site.}
+  
+  \item{delta.latent}{Predictive posterior mean of the probability
+  associated to the observability process for each observation.}
   
 }
 
 \details{
 
-  We model an ecological process where the abundance of the species is
-  explained by habitat suitability. The ecological process includes an
-  intrinsic conditional autoregressive (iCAR) model for spatial
-  autocorrelation between observations, assuming that the probability of
-  presence of the species at one site depends on the probability of
-  presence of the species on neighboring sites.
+  The model integrates two processes, an ecological process associated
+  to the presence or absence of the species due to habitat suitability
+  and an observation process that takes into account the fact that the
+  probability of detection of the species is inferior to one. The
+  ecological process includes an intrinsic conditional autoregressive
+  model (iCAR) model for spatial autocorrelation between observations,
+  assuming that the probability of presence of the species at one site
+  depends on the probability of presence of the species on neighboring
+  sites.
 
   \bold{Ecological process:}
-  \deqn{y_i \sim \mathcal{P}oisson(\lambda_i,t_i)}{y_i ~ Poisson(lambda_i,t_i)}
-  \deqn{log(\lambda_i) = X_i \beta + \rho_{j(i)}}{log(lambda_i) = X_i *
+  \deqn{z_i \sim \mathcal{B}ernoulli(\theta_i)}{z_i ~ Bernoulli(theta_i)}
+  \deqn{logit(\theta_i) = X_i \beta + \rho_{j(i)}}{logit(theta_i) = X_i *
     beta + rho_j(i)}
   \eqn{\rho_j}{rho_j}: spatial random effect
   
@@ -179,25 +238,36 @@ Vrho.max=1000, seed = 1234, verbose = 1, save.rho = 0, save.p = 0)}
   
   \eqn{n_j}{n_j}: number of neighbors for spatial entity \eqn{j}.
   
+  \bold{Observation process:}
+  \deqn{y_{it} \sim \mathcal{B}ernoulli(z_i * \delta_{it})}{y_i ~ Bernoulli(z_i
+    * delta_it)}
+  \deqn{logit(\delta_{it}) = W_{it} \gamma}{logit(delta_it) = W_it * gamma} 
+
 }
 
 \references{
 
-  Gelfand, A. E.; Schmidt, A. M.; Wu, S.; Silander, J. A.; Latimer, A. and
-  Rebelo, A. G. (2005) Modelling species diversity through species level
-  hierarchical modelling. \emph{Applied Statistics}, 54, 1-20.
-   
-  Latimer, A. M.; Wu, S. S.; Gelfand, A. E. and Silander, J. A. (2006) Building
-  statistical models to analyze species distributions. \emph{Ecological
-    Applications}, 16, 33-50.
-
-  Lichstein, J. W.; Simons, T. R.; Shriner, S. A. & Franzreb,
-  K. E. (2002) Spatial autocorrelation and autoregressive models in ecology
-  \emph{Ecological Monographs}, 72, 445-463.
-
   Diez, J. M. & Pulliam, H. R. (2007) Hierarchical analysis of species
   distributions and abundance across environmental gradients
   \emph{Ecology}, 88, 3144-3152.
+  
+  Gelfand, A. E.; Schmidt, A. M.; Wu, S.; Silander, J. A.; Latimer,
+  A. and Rebelo, A. G. (2005) Modelling species diversity through
+  species level hierarchical modelling. \emph{Applied Statistics}, 54,
+  1-20.
+    
+  Latimer, A. M.; Wu, S. S.; Gelfand, A. E. and Silander, J. A. (2006)
+  Building statistical models to analyze species
+  distributions. \emph{Ecological Applications}, 16, 33-50.
+
+  Lichstein, J. W.; Simons, T. R.; Shriner, S. A. & Franzreb,
+  K. E. (2002) Spatial autocorrelation and autoregressive models in
+  ecology \emph{Ecological Monographs}, 72, 445-463.
+
+  MacKenzie, D. I.; Nichols, J. D.; Lachman, G. B.; Droege, S.; Andrew
+  Royle, J. and Langtimm, C. A. (2002) Estimating site occupancy rates
+  when detection probabilities are less than one. \emph{Ecology}, 83,
+  2248-2255.
 
 }
 
@@ -211,15 +281,15 @@ Vrho.max=1000, seed = 1234, verbose = 1, save.rho = 0, save.p = 0)}
 
 \examples{
 
-\dontrun{
+\dontrun{ 
 
 #==============================================
-# hSDM.poisson.iCAR()
+# hSDM.siteocc.iCAR()
 # Example with simulated data
 #==============================================
 
 #=================
-#== Load libraries                          
+#== Load libraries
 library(hSDM)
 library(raster)
 library(sp)
@@ -294,36 +364,71 @@ set.seed(2*seed)
 x2 <- rnorm(nsite,0,1)
 X <- cbind(rep(1,nsite),x1,x2)
 beta.target <- c(-1,1,-1)
-log.lambda <- X \%*\% beta.target + rho[cells]
-lambda <- exp(log.lambda)
+logit.theta <- X \%*\% beta.target + rho[cells]
+theta <- inv.logit(logit.theta)
 set.seed(seed)
-Y <- rpois(nsite,lambda)
+Z <- rbinom(nsite,1,theta)
 
 #= Relative importance of spatial random effects
 RImp <- mean(abs(rho[cells])/abs(X \%*\% beta.target))
 RImp
 
-#= Data-sets
-data.obs <- data.frame(Y,x1,x2,cell=cells)
+#= Number of visits associated to each observation point
+set.seed(seed)
+visits <- rpois(nsite,3)
+visits[visits==0] <- 1
+# Vector of observation points
+sites <- vector()
+for (i in 1:nsite) {
+    sites <- c(sites,rep(i,visits[i]))
+}
 
-#==================================
-#== Site-occupancy model
+#= Observation process (detectability)
+nobs <- sum(visits)
+set.seed(seed)
+w1 <- rnorm(nobs,0,1)
+set.seed(2*seed)
+w2 <- rnorm(nobs,0,1)
+W <- cbind(rep(1,nobs),w1,w2)
+gamma.target <- c(-1,1,-1)
+logit.delta <- W \%*\% gamma.target
+delta <- inv.logit(logit.delta)
+set.seed(seed)
+Y <- rbinom(nobs,1,delta*Z[sites])
+
+#= Data-sets
+data.obs <- data.frame(Y,w1,w2,site=sites)
+data.suit <- data.frame(x1,x2,cell=cells)
+
+#================================
+#== Parameter inference with hSDM
 
 Start <- Sys.time() # Start the clock
-mod.hSDM.poisson.iCAR <- hSDM.poisson.iCAR(counts=data.obs$Y,
-                                           suitability=~x1+x2,
-                                           spatial.entity=data.obs$cell,
-                                           data=data.obs,
-                                           n.neighbors=n.neighbors,
-                                           neighbors=adj,
+mod.hSDM.siteocc.iCAR <- hSDM.siteocc.iCAR(# Observations
+                                           presence=data.obs$Y,
+                                           observability=~w1+w2,
+                                           site=data.obs$site,
+                                           data.observability=data.obs,
+                                           # Habitat
+                                           suitability=~x1+x2, data.suitability=data.suit,
+                                           # Spatial structure
+                                           spatial.entity=data.suit$cell,
+                                           n.neighbors=n.neighbors, neighbors=adj,
+                                           # Predictions
                                            suitability.pred=NULL,
                                            spatial.entity.pred=NULL,
-                                           burnin=5000, mcmc=5000, thin=5,
+                                           # Chains
+                                           burnin=10000, mcmc=5000, thin=5,
+                                           # Starting values
                                            beta.start=0,
+                                           gamma.start=0,
                                            Vrho.start=1,
+                                           # Priors
                                            mubeta=0, Vbeta=1.0E6,
-                                           priorVrho="1/Gamma",
-                                           shape=0.5, rate=0.0005,
+                                           mugamma=0, Vgamma=1.0E6,
+                                           priorVrho="Uniform",
+                                           Vrho.max=10,
+                                           # Various
                                            seed=1234, verbose=1,
                                            save.rho=1, save.p=0)
 Time.hSDM <- difftime(Sys.time(),Start,units="sec") # Time difference
@@ -335,27 +440,28 @@ Time.hSDM
 #== Outputs
 
 #= Parameter estimates 
-summary(mod.hSDM.poisson.iCAR$mcmc)
-pdf("Posteriors_hSDM.poisson.iCAR.pdf")
-plot(mod.hSDM.poisson.iCAR$mcmc)
+summary(mod.hSDM.siteocc.iCAR$mcmc)
+pdf("Posteriors_hSDM.siteocc.iCAR.pdf")
+plot(mod.hSDM.siteocc.iCAR$mcmc)
 dev.off()
 
 #= Predictions
-summary(mod.hSDM.poisson.iCAR$lambda.latent)
-summary(mod.hSDM.poisson.iCAR$lambda.pred)
+summary(mod.hSDM.siteocc.iCAR$theta.latent)
+summary(mod.hSDM.siteocc.iCAR$delta.latent)
+summary(mod.hSDM.siteocc.iCAR$theta.pred)
 pdf(file="Pred-Init.pdf")
-plot(lambda,mod.hSDM.poisson.iCAR$lambda.pred)
+plot(theta,mod.hSDM.siteocc.iCAR$theta.pred)
 abline(a=0,b=1,col="red")
 dev.off()
 
 #= Summary plots for spatial random effects
 
 # rho.pred
-rho.pred <- apply(mod.hSDM.poisson.iCAR$rho.pred,2,mean)
+rho.pred <- apply(mod.hSDM.siteocc.iCAR$rho.pred,2,mean)
 r.rho.pred <- rasterFromXYZ(cbind(coords,rho.pred))
 
 # plot
-pdf(file="Summary_hSDM.poisson.iCAR.pdf")
+pdf(file="Summary_hSDM.siteocc.iCAR.pdf")
 par(mfrow=c(2,2))
 # rho target
 plot(r.rho, main="rho target")
@@ -378,7 +484,6 @@ dev.off()
 
 }
 
-\keyword{Poisson log regression}
 \keyword{biodiversity}
 \keyword{species distribution models}
 \keyword{hierarchical Bayesian models}
@@ -388,3 +493,4 @@ dev.off()
 \keyword{MCMC}
 \keyword{Markov Chains Monte Carlo}
 \keyword{Metropolis algorithm}
+\keyword{site occupancy models}

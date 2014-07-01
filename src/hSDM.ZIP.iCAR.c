@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////
 //
-// hSDM.poisson.iCAR.c
+// hSDM.ZIP.iCAR.c
 //
 ////////////////////////////////////////////////////////////////////
 //
@@ -54,7 +54,13 @@ struct dens_par {
     int pos_beta;
     double **X;
     double *mubeta, *Vbeta;
-    double *beta_run; 
+    double *beta_run;
+    /* Observability */
+    int NQ;
+    int pos_gamma;
+    double **W;
+    double *mugamma, *Vgamma;
+    double *gamma_run;    
 };
 
 
@@ -70,23 +76,73 @@ static double betadens (double beta_k, void *dens_data) {
     // logLikelihood
     double logL=0.0;
     for (int n=0; n<d->NOBS; n++) {
-	/* lambda */
-	double Xpart_lambda=0.0;
+	/* prob_p */
+	double Xpart_prob_p=0.0;
 	for (int p=0; p<d->NP; p++) {
 	    if (p!=k) {
-		Xpart_lambda+=d->X[n][p]*d->beta_run[p];
+		Xpart_prob_p+=d->X[n][p]*d->beta_run[p];
 	    }
 	}
-	Xpart_lambda+=d->X[n][k]*beta_k;
-	double lambda=exp(Xpart_lambda+d->rho_run[d->IdCell[n]]);
+	Xpart_prob_p+=d->X[n][k]*beta_k;
+	double prob_p=invlogit(Xpart_prob_p+d->rho_run[d->IdCell[n]]);
+	/* prob_q */
+	double log_prob_q=0.0;
+	for (int q=0; q<d->NQ; q++) {
+	    log_prob_q+=d->W[n][q]*d->gamma_run[q];
+	}
+	double prob_q=exp(log_prob_q);
 	/* log Likelihood */
-	logL+=dpois(d->Y[n],lambda,1);
+	if (d->Y[n]>0) {
+	    logL+=dpois(d->Y[n],prob_q,1)+log(prob_p);
+	}
+	if (d->Y[n]==0) {
+	    logL+=log(exp(-prob_q)*prob_p+(1-prob_p));
+	}
     }
     // logPosterior=logL+logPrior
     double logP=logL+dnorm(beta_k,d->mubeta[k],sqrt(d->Vbeta[k]),1);
     return logP;
 }
 
+/* ************************************************************ */
+/* gammadens */
+
+static double gammadens (double gamma_k, void *dens_data) {
+    // Pointer to the structure: d 
+    struct dens_par *d;
+    d=dens_data;
+    // Indicating the rank of the parameter of interest
+    int k=d->pos_gamma; //
+    // logLikelihood
+    double logL=0.0;
+    for (int n=0; n<d->NOBS; n++) {
+	/* prob_p */
+	double Xpart_prob_p=0.0;
+	for (int p=0; p<d->NP; p++) {
+	    Xpart_prob_p+=d->X[n][p]*d->beta_run[p];
+	}
+	double prob_p=invlogit(Xpart_prob_p+d->rho_run[d->IdCell[n]]);
+	/* prob_q */
+	double log_prob_q=0.0;
+	for (int q=0; q<d->NQ; q++) {
+	    if (q!=k) {
+		log_prob_q+=d->W[n][q]*d->gamma_run[q];
+	    }
+	}
+	log_prob_q+=d->W[n][k]*gamma_k;
+	double prob_q=exp(log_prob_q);
+	/* log Likelihood */
+	if (d->Y[n]>0) {
+	    logL+=dpois(d->Y[n],prob_q,1)+log(prob_p);
+	}
+	if (d->Y[n]==0) {
+	    logL+=log(exp(-prob_q)*prob_p+(1-prob_p));
+	}
+    }
+    // logPosterior=logL+logPrior
+    double logP=logL+dnorm(gamma_k,d->mugamma[k],sqrt(d->Vgamma[k]),1); 
+    return logP;
+}
 
 /* ************************************************************ */
 /* rhodens_visited */
@@ -101,14 +157,25 @@ static double rhodens_visited (double rho_i, void *dens_data) {
     double logL=0;
     for (int m=0; m<d->nObsCell[i]; m++) {
 	int w=d->PosCell[i][m]; // which observation
-	/* lambda */
-	double Xpart_lambda=0.0;
+	/* prob_p */
+	double Xpart_prob_p=0.0;
 	for (int p=0; p<d->NP; p++) {
-	    Xpart_lambda+=d->X[w][p]*d->beta_run[p];
+	    Xpart_prob_p+=d->X[w][p]*d->beta_run[p];
 	}
-	double lambda=exp(Xpart_lambda+rho_i);
+	double prob_p=invlogit(Xpart_prob_p+rho_i);
+	/* prob_q */
+	double log_prob_q=0.0;
+	for (int q=0; q<d->NQ; q++) {
+	    log_prob_q+=d->W[w][q]*d->gamma_run[q];
+	}
+	double prob_q=exp(log_prob_q);
 	/* log Likelihood */
-	logL+=dpois(d->Y[w],lambda,1);
+	if (d->Y[w]>0) {
+	    logL+=dpois(d->Y[w],prob_q,1)+log(prob_p);
+	}
+	if (d->Y[w]==0) {
+	    logL+=log(exp(-prob_q)*prob_p+(1-prob_p));
+	}
     }
     // logPosterior=logL+logPrior
     int nNeighbors=d->nNeigh[i];
@@ -144,15 +211,17 @@ static double rhodens_unvisited (void *dens_data) {
 /* ************************************************************ */
 /* Gibbs sampler function */
 
-void hSDM_poisson_iCAR (
+void hSDM_ZIP_iCAR (
 	
     // Constants and data
     const int *ngibbs, int *nthin, int *nburn, // Number of iterations, burning and samples
     const int *nobs, // Number of observations
     const int *ncell, // Constants
-    const int *np, // Number of fixed effects for lambda
+    const int *np, // Number of fixed effects for prob_p
+    const int *nq, // Number of fixed effects for prob_q
     const int *Y_vect, // Number of successes (presences)
     const double *X_vect, // Suitability covariates
+    const double *W_vect, // Observability covariates
     // Spatial correlation
     const int *C_vect, // Cell Id
     const int *nNeigh, // Number of neighbors for each cell
@@ -163,20 +232,24 @@ void hSDM_poisson_iCAR (
     const int *C_pred_vect, // Cell Id for predictions
     // Starting values for M-H
     const double *beta_start,
+    const double *gamma_start,
     const double *rho_start,
     // Parameters to save
     double *beta_vect,
+    double *gamma_vect,
     double *rho_pred,
     double *Vrho,
     // Defining priors
     const double *mubeta, double *Vbeta,
+    const double *mugamma, double *Vgamma,
     const double *priorVrho,
     const double *shape, double *rate,
     const double *Vrho_max,
     // Diagnostic
     double *Deviance,
-    double *lambda_latent, // Latent proba of suitability (length NOBS) 
-    double *lambda_pred, // Proba of suitability for predictions (length NPRED)
+    double *prob_p_latent, // Latent proba of suitability (length NOBS) 
+    double *prob_q_latent, // Latent proba of observability (length NOBS)
+    double *prob_p_pred, // Proba of suitability for predictions (length NPRED)
     // Seeds
     const int *seed,
     // Verbose
@@ -204,17 +277,22 @@ void hSDM_poisson_iCAR (
     const int NOBS=nobs[0];
     const int NCELL=ncell[0];
     const int NP=np[0];
+    const int NQ=nq[0];
     const int NPRED=npred[0];
 
     ///////////////////////////////////
     // Declaring some useful objects //
-    double *lambda_run=malloc(NOBS*sizeof(double));
+    double *prob_p_run=malloc(NOBS*sizeof(double));
     for (int n=0; n<NOBS; n++) {
-	lambda_run[n]=0.0;
+	prob_p_run[n]=0.0;
     }
-    double *lambda_pred_run=malloc(NPRED*sizeof(double));
+    double *prob_q_run=malloc(NOBS*sizeof(double));
+    for (int n=0; n<NOBS; n++) {
+	prob_q_run[n]=0.0;
+    }
+    double *prob_p_pred_run=malloc(NPRED*sizeof(double));
     for (int m=0; m<NPRED; m++) {
-	lambda_pred_run[m]=0.0;
+	prob_p_pred_run[m]=0.0;
     }
 
     //////////////////////////////////////////////////////////
@@ -224,7 +302,7 @@ void hSDM_poisson_iCAR (
     /* Data */
     dens_data.NOBS=NOBS;
     dens_data.NCELL=NCELL;
-   // Y
+    // Y
     dens_data.Y=malloc(NOBS*sizeof(int));
     for (int n=0; n<NOBS; n++) {
 	dens_data.Y[n]=Y_vect[n];
@@ -303,6 +381,27 @@ void hSDM_poisson_iCAR (
 	dens_data.beta_run[p]=beta_start[p];
     }
 
+    /* Observability process */
+    dens_data.NQ=NQ;
+    dens_data.pos_gamma=0;
+    dens_data.W=malloc(NOBS*sizeof(double*));
+    for (int n=0; n<NOBS; n++) {
+    	dens_data.W[n]=malloc(NQ*sizeof(double));
+    	for (int q=0; q<NQ; q++) {
+    	    dens_data.W[n][q]=W_vect[q*NOBS+n];
+    	}
+    }
+    dens_data.mugamma=malloc(NQ*sizeof(double));
+    dens_data.Vgamma=malloc(NQ*sizeof(double));
+    for (int q=0; q<NQ; q++) {
+	dens_data.mugamma[q]=mugamma[q];
+	dens_data.Vgamma[q]=Vgamma[q];
+    }
+    dens_data.gamma_run=malloc(NQ*sizeof(double));
+    for (int q=0; q<NQ; q++) {
+	dens_data.gamma_run[q]=gamma_start[q];
+    }
+
     /* Visited cell or not */
     int *viscell = malloc(NCELL*sizeof(int));
     for (int i=0; i<NCELL; i++) {
@@ -346,6 +445,16 @@ void hSDM_poisson_iCAR (
 	Ar_beta[p]=0.0;
     }
 
+    // gamma
+    double *sigmap_gamma = malloc(NQ*sizeof(double));
+    int *nA_gamma = malloc(NQ*sizeof(int));
+    double *Ar_gamma = malloc(NQ*sizeof(double)); // Acceptance rate 
+    for (int q=0; q<NQ; q++) {
+	nA_gamma[q]=0;
+	sigmap_gamma[q]=1.0;
+	Ar_gamma[q]=0.0;
+    }
+
     // rho
     double *sigmap_rho = malloc(NCELL*sizeof(double));
     int *nA_rho = malloc(NCELL*sizeof(int));
@@ -384,6 +493,25 @@ void hSDM_poisson_iCAR (
 	    if (z < r) {
 		dens_data.beta_run[p]=x_prop;
 		nA_beta[p]++;
+	    }
+	}
+
+
+	////////////////////////////////////////////////
+	// gamma
+	
+	for (int q=0; q<NQ; q++) {
+	    dens_data.pos_gamma=q; // Specifying the rank of the parameter of interest
+	    double x_now=dens_data.gamma_run[q];
+	    double x_prop=myrnorm(x_now,sigmap_gamma[q]);
+	    double p_now=gammadens(x_now, &dens_data);
+	    double p_prop=gammadens(x_prop, &dens_data);
+	    double r=exp(p_prop-p_now); // ratio
+	    double z=myrunif();
+	    // Actualization
+	    if (z < r) {
+		dens_data.gamma_run[q]=x_prop;
+		nA_gamma[q]++;
 	    }
 	}
 
@@ -459,14 +587,25 @@ void hSDM_poisson_iCAR (
 	// logLikelihood
 	double logL=0.0;
 	for (int n=0; n<NOBS; n++) {
-	    /* lambda */
-	    double Xpart_lambda=0.0;
+	    /* prob_p */
+	    double Xpart_prob_p=0.0;
 	    for (int p=0; p<NP; p++) {
-		Xpart_lambda+=dens_data.X[n][p]*dens_data.beta_run[p];
+		Xpart_prob_p+=dens_data.X[n][p]*dens_data.beta_run[p];
 	    }
-	    lambda_run[n]=exp(Xpart_lambda+dens_data.rho_run[dens_data.IdCell[n]]);
+	    prob_p_run[n]=invlogit(Xpart_prob_p+dens_data.rho_run[dens_data.IdCell[n]]);
+	    /* prob_q */
+	    double log_prob_q=0.0;
+	    for (int q=0; q<NQ; q++) {
+		log_prob_q+=dens_data.W[n][q]*dens_data.gamma_run[q];
+	    }
+	    prob_q_run[n]=exp(log_prob_q);
 	    /* log Likelihood */
-	    logL+=dpois(dens_data.Y[n],lambda_run[n],1);
+	    if (dens_data.Y[n]>0) {
+	        logL+=dpois(dens_data.Y[n],prob_q_run[n],1)+log(prob_p_run[n]);
+	    }
+	    if (dens_data.Y[n]==0) {
+	        logL+=log(exp(-prob_q_run[n])*prob_p_run[n]+(1-prob_p_run[n]));
+	    }
 	}
 
 	// Deviance
@@ -476,12 +615,12 @@ void hSDM_poisson_iCAR (
 	//////////////////////////////////////////////////
 	// Predictions
 	for (int m=0; m<NPRED; m++) {
-	    /* lambda_pred_run */
-	    double Xpart_lambda_pred=0.0;
+	    /* prob_p_pred_run */
+	    double Xpart_prob_p_pred=0.0;
 	    for (int p=0; p<NP; p++) {
-		Xpart_lambda_pred+=X_pred[m][p]*dens_data.beta_run[p];
+		Xpart_prob_p_pred+=X_pred[m][p]*dens_data.beta_run[p];
 	    }
-	    lambda_pred_run[m]=exp(Xpart_lambda_pred+dens_data.rho_run[IdCell_pred[m]]);
+	    prob_p_pred_run[m]=invlogit(Xpart_prob_p_pred+dens_data.rho_run[IdCell_pred[m]]);
 	}
 
 
@@ -492,9 +631,13 @@ void hSDM_poisson_iCAR (
 	    for (int p=0; p<NP; p++) {
 		beta_vect[p*NSAMP+(isamp-1)]=dens_data.beta_run[p];
 	    }
+	    for (int q=0; q<NQ; q++) {
+		gamma_vect[q*NSAMP+(isamp-1)]=dens_data.gamma_run[q];
+	    }
 	    Deviance[isamp-1]=Deviance_run;
 	    for (int n=0; n<NOBS; n++) {
-		lambda_latent[n]+=lambda_run[n]/NSAMP; // We compute the mean of NSAMP values
+		prob_p_latent[n]+=prob_p_run[n]/NSAMP; // We compute the mean of NSAMP values
+		prob_q_latent[n]+=prob_q_run[n]/NSAMP; // We compute the mean of NSAMP values
 	    }
 	    // rho
 	    if (save_rho[0]==0) { // We compute the mean of NSAMP values
@@ -507,15 +650,15 @@ void hSDM_poisson_iCAR (
 		    rho_pred[i*NSAMP+(isamp-1)]=dens_data.rho_run[i]; 
 		}
 	    }
-	    // lambda
+	    // prob.p
 	    if (save_p[0]==0) { // We compute the mean of NSAMP values
 		for (int m=0; m<NPRED; m++) {
-		    lambda_pred[m]+=lambda_pred_run[m]/NSAMP; 
+		    prob_p_pred[m]+=prob_p_pred_run[m]/NSAMP; 
 		}
 	    }
-	    if (save_p[0]==1) { // The NSAMP sampled values for lambda are saved
+	    if (save_p[0]==1) { // The NSAMP sampled values for prob_p are saved
 		for (int m=0; m<NPRED; m++) {
-		    lambda_pred[m*NSAMP+(isamp-1)]=lambda_pred_run[m]; 
+		    prob_p_pred[m*NSAMP+(isamp-1)]=prob_p_pred_run[m]; 
 		}
 	    }
 	    // Vrho
@@ -538,6 +681,13 @@ void hSDM_poisson_iCAR (
 		else sigmap_beta[p]=sigmap_beta[p]/(2-Ar_beta[p]/ropt);
 		nA_beta[p]=0.0; // We reinitialize the number of acceptance to zero
 	    }
+	    // gamma
+	    for (int q=0; q<NQ; q++) {
+		Ar_gamma[q]=((double) nA_gamma[q])/DIV;
+		if (Ar_gamma[q]>=ropt) sigmap_gamma[q]=sigmap_gamma[q]*(2-(1-Ar_gamma[q])/(1-ropt));
+		else sigmap_gamma[q]=sigmap_gamma[q]/(2-Ar_gamma[q]/ropt);
+		nA_gamma[q]=0.0; // We reinitialize the number of acceptance to zero
+	    }
 	    // rho
 	    for (int i=0; i<NCELL; i++) {
 		if (viscell[i]>0) {
@@ -554,6 +704,11 @@ void hSDM_poisson_iCAR (
 	    for (int p=0; p<NP; p++) {
 		Ar_beta[p]=((double) nA_beta[p])/DIV;
 		nA_beta[p]=0.0; // We reinitialize the number of acceptance to zero
+	    }
+	    // gamma
+	    for (int q=0; q<NQ; q++) {
+		Ar_gamma[q]=((double) nA_gamma[q])/DIV;
+		nA_gamma[q]=0.0; // We reinitialize the number of acceptance to zero
 	    }
 	    // rho
 	    for (int i=0; i<NCELL; i++) {
@@ -574,10 +729,15 @@ void hSDM_poisson_iCAR (
 	    //R_ProcessEvents(); for windows
 	    if (((g+1)%(NGIBBS/10))==0) {
 	    	double mAr_beta=0; // Mean acceptance rate
+	    	double mAr_gamma=0;
 	    	double mAr_rho=0;
 	    	// beta
 	    	for (int p=0; p<NP; p++) {
 	    	    mAr_beta+=Ar_beta[p]/NP;
+	    	}
+	    	// gamma
+	    	for (int q=0; q<NQ; q++) {
+	    	    mAr_gamma+=Ar_gamma[q]/NQ;
 	    	}
 	    	// rho
 	    	for (int i=0; i<NCELL; i++) {
@@ -585,7 +745,7 @@ void hSDM_poisson_iCAR (
 			mAr_rho+=Ar_rho[i]/NVISCELL;
 		    }
 	    	}
-	    	Rprintf(":%.1f%%, mean accept. rates= beta:%.3f, rho:%.3f\n",Perc,mAr_beta,mAr_rho);
+	    	Rprintf(":%.1f%%, mean accept. rates= beta:%.3f, gamma:%.3f, rho:%.3f\n",Perc,mAr_beta,mAr_gamma,mAr_rho);
 	    	R_FlushConsole();
 	    	//R_ProcessEvents(); for windows
 	    }
@@ -624,7 +784,16 @@ void hSDM_poisson_iCAR (
     free(dens_data.mubeta);
     free(dens_data.Vbeta);
     free(dens_data.beta_run);
-    free(lambda_run);
+    free(prob_p_run);
+    /* Observability */
+    for (int n=0; n<NOBS; n++) {
+    	free(dens_data.W[n]);
+    }
+    free(dens_data.W);
+    free(dens_data.mugamma);
+    free(dens_data.Vgamma);
+    free(dens_data.gamma_run);
+    free(prob_q_run);
     /* Visited cells */
     free(viscell);
     /* Predictions */
@@ -633,11 +802,14 @@ void hSDM_poisson_iCAR (
     	free(X_pred[m]);
     }
     free(X_pred);
-    free(lambda_pred_run);
+    free(prob_p_pred_run);
     /* Adaptive MH */
     free(sigmap_beta);
     free(nA_beta);
     free(Ar_beta);
+    free(sigmap_gamma);
+    free(nA_gamma);
+    free(Ar_gamma);
     free(sigmap_rho);
     free(nA_rho);
     free(Ar_rho);

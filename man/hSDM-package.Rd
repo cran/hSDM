@@ -1,5 +1,4 @@
 \name{hSDM-package}
-\alias{hSDM-package}
 \alias{hSDM}
 \docType{package}
 
@@ -20,8 +19,8 @@
   \tabular{ll}{
     Package: \tab hSDM\cr
     Type: \tab Package\cr
-    Version: \tab 1.0\cr
-    Date: \tab 2012-11-19\cr
+    Version: \tab 1.3\cr
+    Date: \tab 2013-10-15\cr
     License: \tab GPL-3 \cr
     LazyLoad: \tab yes\cr
   }
@@ -30,11 +29,13 @@
 \author{
   \tabular{l}{
     Ghislain Vieilledent <ghislain.vieilledent@cirad.fr>\cr
-    Andrew M. Latimer <amlatimer@ucdavis.edu>\cr
-    Alan E. Gelfand <alan@stat.duke.edu>\cr
     Cory Merow <cory.merow@gmail.com>\cr
+    Jérôme Guélat <jerome.guelat@vogelwarte.ch>\cr
+    Andrew M. Latimer <amlatimer@ucdavis.edu>\cr
+    Marc Kéry <marc.kery@vogelwarte.ch>\cr
+    Alan E. Gelfand <alan@stat.duke.edu>\cr
     Adam M. Wilson <adam.wilson@yale.edu>\cr
-    Frederic Mortier <frederic.mortier@cirad.fr>\cr
+    Frédéric Mortier <frederic.mortier@cirad.fr>\cr
     John A. Silander Jr. <john.silander@uconn.edu>\cr
   }
 }

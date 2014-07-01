@@ -1,16 +1,18 @@
 \name{hSDM.binomial}
 \alias{hSDM.binomial}
 
-\title{The \code{hSDM.binomial} function performs a Binomial logistic
-  regression model in a Bayesian framework.}
+\title{Binomial logistic regression model}
 
-\description{The \code{hSDM.binomial} function calls a Gibbs sampler
-  written in C code which uses a Metropolis algorithm to estimate the
-  conditional posterior distribution of model's parameters.}
+\description{The \code{hSDM.binomial} function performs a Binomial
+  logistic regression in a Bayesian framework. The function calls
+  a Gibbs sampler written in C code which uses an adaptive Metropolis
+  algorithm to estimate the conditional posterior distribution of
+  model's parameters.}
 
-\usage{hSDM.binomial(presences, trials, suitability, data, burnin =
-5000, mcmc = 10000, thin = 10, beta.start, mubeta = 0, Vbeta = 1e+06,
-seed = 1234, verbose = 1)}
+\usage{hSDM.binomial(presences, trials, suitability, data,
+suitability.pred = NULL, burnin = 5000, mcmc = 10000, thin = 10,
+beta.start, mubeta = 0, Vbeta = 1e+06, seed = 1234, verbose = 1, save.p
+= 0)}
 
 \arguments{
   
@@ -26,7 +28,12 @@ seed = 1234, verbose = 1)}
   terms specifying the explicative variables for the suitability process
   of the model.}
   
-  \item{data}{A data frame containing the model's explicative variables.}
+  \item{data}{A data frame containing the model's explicative
+    variables.}
+
+  \item{suitability.pred}{An optional data frame in which to look for
+    variables with which to predict. If NULL, the observations are
+    used.}
 
   \item{burnin}{The number of burnin iterations for the sampler.}
     
@@ -62,6 +69,12 @@ seed = 1234, verbose = 1)}
     progress bar is printed, indicating the step (in \%) reached by the
     Gibbs sampler.}
 
+  \item{save.p}{A switch (0,1) which determines whether or not the
+    sampled values for predictions are saved. Default is 0: the
+    posterior mean is computed and returned in the \code{theta.pred}
+    vector. Be careful, setting \code{save.p} to 1 might require a large
+    amount of memory.}
+  
 }
 
 \value{
@@ -69,29 +82,46 @@ seed = 1234, verbose = 1)}
   \item{mcmc}{An mcmc object that contains the posterior sample. This
     object can be summarized by functions provided by the coda
     package. The posterior sample of the deviance \eqn{D}{D}, with
-    \eqn{D=-2\log(\prod_i P(y_i,n_i|\beta))}{%
-      D=-2log(prod_i P(y_i,n_i|beta))}, is also
-    provided.}
+    \eqn{D=-2\log(\prod_i P(y_i|\beta,t_i))}{%
+      D=-2log(prod_i P(y_i|beta,t_i))}, is also provided.}
+
+  \item{theta.pred}{If \code{save.p} is set to 0 (default),
+    \code{theta.pred} is the predictive posterior mean of the
+    probability associated to the suitability process for each
+    prediction. If \code{save.p} is set to 1, \code{theta.pred} is an
+    \code{mcmc} object with sampled values of the probability associated
+    to the suitability process for each prediction.}
   
-  \item{prob.pred.p}{Predictive posterior mean of the probability
-    associated to the suitability process for each spatial cell.}
-    
+  \item{theta.latent}{Predictive posterior mean of the probability
+    associated to the suitability process for each observation.}
+      
+}
+
+\details{
+
+  We model an ecological process where the presence or absence
+  of the species is explained by habitat suitability.
+
+  \bold{Ecological process:}
+  \deqn{y_i \sim \mathcal{B}inomial(\theta_i,t_i)}{y_i ~ Binomial(theta_i,t_i)}
+  \deqn{logit(\theta_i) = X_i \beta}{logit(theta_i) = X_i * beta}
+  
 }
 
 \references{
 
+  Gelfand, A. E.; Schmidt, A. M.; Wu, S.; Silander, J. A.; Latimer, A. and
+  Rebelo, A. G. (2005) Modelling species diversity through species level
+  hierarchical modelling. \emph{Applied Statistics}, 54, 1-20.
+  
   Latimer, A. M.; Wu, S. S.; Gelfand, A. E. and Silander, J. A. (2006) Building
   statistical models to analyze species distributions. \emph{Ecological
   Applications}, 16, 33-50.
 
-  Gelfand, A. E.; Schmidt, A. M.; Wu, S.; Silander, J. A.; Latimer, A. and
-  Rebelo, A. G. (2005) Modelling species diversity through species level
-  hierarchical modelling. \emph{Applied Statistics}, 54, 1-20.
-
 }
 
 \author{
-  Ghislain Vieilledent <ghislain.vieilledent@cirad.fr>
+  Ghislain Vieilledent \email{ghislain.vieilledent@cirad.fr}
 }
 
 \seealso{
@@ -102,75 +132,78 @@ seed = 1234, verbose = 1)}
 
 \dontrun{
 
-
 #==============================================
 # hSDM.binomial()
 # Example with simulated data
 #==============================================
 
-#============
-#== Preambule
+#=================
+#== Load libraries
 library(hSDM)
 
 #==================
 #== Data simulation
 
-# Set seed for repeatability
-set.seed(1234)
+#= Number of sites
+nsite <- 200
 
-# Constants
-nobs <- 1000
-trials <- rpois(nobs,5)	# Number of trial associated to each observation
+#= Set seed for repeatability
+seed <- 1234
 
-# Covariates for "suitability" process
-X1 <- rnorm(n=nobs,0,1)
-X2 <- rnorm(n=nobs,0,1)
-X <- cbind(rep(1,nobs),X1,X2)
+#= Number of visits associated to each site
+set.seed(seed)
+visits<- rpois(nsite,3)
+visits[visits==0] <- 1
 
-# Target parameters
-beta.target <- matrix(c(0.2,0.1,0.1),ncol=1) # fixed effects
-
-#== Simulating latent variables
-
-# Suitability
+#= Ecological process (suitability)
+set.seed(seed)
+x1 <- rnorm(nsite,0,1)
+set.seed(2*seed)
+x2 <- rnorm(nsite,0,1)
+X <- cbind(rep(1,nsite),x1,x2)
+beta.target <- c(-1,1,-1)
 logit.theta <- X \%*\% beta.target
 theta <- inv.logit(logit.theta)
+set.seed(seed)
+Y <- rbinom(nsite,visits,theta)
 
-#== Simulating response variable
-Y <- rbinom(n=nobs,size=trials,prob=theta)
-
-#== Data-set
-Data <- data.frame(Y,trials,X1,X2)
-str(Data)
-par(mfrow=c(2,1))
-plot(Data$X1,logit.theta)
-plot(Data$X2,logit.theta)
+#= Data-sets
+data.obs <- data.frame(Y,visits,x1,x2)
 
 #==================================
-#== Statistical modelling
+#== Site-occupancy model
 
-#== glm resolution to compare
-mod.glm <- glm(cbind(Y,trials-Y)~X1+X2,family="binomial",data=Data)
-summary(mod.glm)
-beta.hat.glm <- coef(mod.glm)
-
-#== hSDM
-mod.hSDM.binomial <- hSDM.binomial(presences=Data$Y,
-                                   trials=Data$trials,
-                                   suitability=~X1+X2,
-                                   data=Data, burnin=1000,
-                                   mcmc=1000, thin=1,
-                                   beta.start=beta.hat.glm,
+mod.hSDM.binomial <- hSDM.binomial(presences=data.obs$Y,
+                                   trials=data.obs$visits,
+                                   suitability=~x1+x2,
+                                   data=data.obs,
+                                   suitability.pred=NULL,
+                                   burnin=1000, mcmc=1000, thin=1,
+                                   beta.start=0,
                                    mubeta=0, Vbeta=1.0E6,
-                                   seed=1234, verbose=1)
+                                   seed=1234, verbose=1,
+                                   save.p=0)
 
 #==========
 #== Outputs
+
+#= Parameter estimates
 summary(mod.hSDM.binomial$mcmc)
 pdf(file="Posteriors_hSDM.binomial.pdf")
 plot(mod.hSDM.binomial$mcmc)
 dev.off()
-summary(mod.hSDM.binomial$prob.p.pred)
+
+#== glm resolution to compare
+mod.glm <- glm(cbind(Y,visits-Y)~x1+x2,family="binomial",data=data.obs)
+summary(mod.glm)
+
+#= Predictions
+summary(mod.hSDM.binomial$theta.latent)
+summary(mod.hSDM.binomial$theta.pred)
+pdf(file="Pred-Init.pdf")
+plot(theta,mod.hSDM.binomial$theta.pred)
+abline(a=0,b=1,col="red")
+dev.off()
 
 }
 
@@ -179,6 +212,7 @@ summary(mod.hSDM.binomial$prob.p.pred)
 \keyword{Binomial logistic regression}
 \keyword{biodiversity}
 \keyword{species distribution models}
+\keyword{hierarchical Bayesian models}
 \keyword{MCMC}
 \keyword{Markov Chains Monte Carlo}
 \keyword{Metropolis algorithm}

@@ -1,28 +1,33 @@
 \name{hSDM.poisson}
 \alias{hSDM.poisson}
 
-\title{The \code{hSDM.poisson} function performs a Poisson regression in
-  a Bayesian framework.}
+\title{Poisson log regression model}
 
-\description{The \code{hSDM.poisson} function calls a Gibbs sampler
-  written in C code which uses a Metropolis algorithm to estimate the
-  conditional posterior distribution of model's parameters.}
+\description{The \code{hSDM.poisson} function performs a Poisson log
+  regression in a Bayesian framework. The function calls a Gibbs sampler
+  written in C code which uses an adaptive Metropolis algorithm to
+  estimate the conditional posterior distribution of model's
+  parameters.}
 
-\usage{hSDM.poisson(counts, suitability, data, burnin = 5000, mcmc =
-10000, thin = 10, beta.start, mubeta = 0, Vbeta = 1e+06, seed = 1234,
-verbose = 1)}
+\usage{hSDM.poisson(counts, suitability, data, suitability.pred = NULL,
+burnin = 5000, mcmc = 10000, thin = 10, beta.start, mubeta = 0, Vbeta =
+1e+06, seed = 1234, verbose = 1, save.p = 0)}
 
 \arguments{
   
   \item{counts}{A vector indicating the count (or abundance) for each
-  observation.}
+    observation.}
 
   \item{suitability}{A one-sided formula of the form '~x1+...+xp' with p
   terms specifying the explicative covariates for the suitability
   process of the model.}
   
   \item{data}{A data frame containing the model's explicative
-  variables.}
+    variables.}
+
+  \item{suitability.pred}{An optional data frame in which to look for
+    variables with which to predict. If NULL, the observations are
+    used.}
 
   \item{burnin}{The number of burnin iterations for the sampler.}
     
@@ -58,6 +63,12 @@ verbose = 1)}
     progress bar is printed, indicating the step (in \%) reached by the
     Gibbs sampler.}
 
+  \item{save.p}{A switch (0,1) which determines whether or not the
+    sampled values for predictions are saved. Default is 0: the
+    posterior mean is computed and returned in the \code{lambda.pred}
+    vector. Be careful, setting \code{save.p} to 1 might require a large
+    amount of memory.}
+
 }
 
 \value{
@@ -68,10 +79,28 @@ verbose = 1)}
     \eqn{D=-2\log(\prod_i P(y_i,n_i|\beta))}{%
       D=-2log(prod_i P(y_i,n_i|beta))}, is also
     provided.}
+
+  \item{lambda.pred}{If \code{save.p} is set to 0 (default),
+    \code{lambda.pred} is the predictive posterior mean of the abundance
+    associated to the suitability process for each prediction. If
+    \code{save.p} is set to 1, \code{lambda.pred} is an \code{mcmc}
+    object with sampled values of the abundance associated to the
+    suitability process for each prediction.}
   
-  \item{prob.pred.p}{Predictive posterior mean of the probability
-    associated to the suitability process for each spatial cell.}
+  \item{lambda.latent}{Predictive posterior mean of the abundance
+    associated to the suitability process for each observation.}
     
+}
+
+\details{
+
+  We model the abundance of the species as a function of environmental
+  variables.
+
+  \bold{Ecological process:}
+  \deqn{y_i \sim \mathcal{P}oisson(\lambda_i)}{y_i ~ Poisson(lambda_i)}
+  \deqn{log(\lambda_i) = X_i \beta}{log(lambda_i) = X_i * beta}
+  
 }
 
 \references{
@@ -99,70 +128,71 @@ verbose = 1)}
 \dontrun{
 
 #==============================================
-# hSDM.hierarchical.poisson()
+# hSDM.poisson()
 # Example with simulated data
 #==============================================
 
-#== Preambule
+#=================
+#== Load libraries
 library(hSDM)
 
 #==================
 #== Data simulation
 
-# Set seed for repeatability
-set.seed(1234)
+#= Number of sites
+nsite <- 200
 
-# Constants
-nobs <- 1000
+#= Set seed for repeatability
+seed <- 1234
 
-# Covariates for "suitability" process
-X1 <- rnorm(n=nobs,0,1)
-X2 <- rnorm(n=nobs,0,1)
-X <- cbind(rep(1,nobs),X1,X2)
+#= Ecological process (suitability)
+set.seed(seed)
+x1 <- rnorm(nsite,0,1)
+set.seed(2*seed)
+x2 <- rnorm(nsite,0,1)
+X <- cbind(rep(1,nsite),x1,x2)
+beta.target <- c(-1,1,-1)
+log.lambda <- X \%*\% beta.target
+lambda <- exp(log.lambda)
+set.seed(seed)
+Y <- rpois(nsite,lambda)
 
-# Target parameters
-beta.target <- matrix(c(0.2,0.1,0.1),ncol=1) # fixed effects
+#= Data-sets
+data.obs <- data.frame(Y,x1,x2)
 
-#== Simulating latent variables
+#==================================
+#== Site-occupancy model
 
-# Suitability
-log.theta <- X \%*\% beta.target
-theta <- exp(log.theta)
-
-#== Simulating response variable
-Y <- rpois(n=nobs,lambda=theta)
-
-#== Data-set
-Data <- data.frame(Y,X1,X2)
-str(Data)
-par(mfrow=c(2,1))
-plot(Data$X1,log.theta)
-plot(Data$X2,log.theta)
-
-#========================
-#== Statistical modelling
-
-#== glm resolution to compare
-mod.glm <- glm(Y~X1+X2,family="poisson",data=Data)
-summary(mod.glm)
-beta.hat.glm <- coef(mod.glm)
-
-#== hSDM
-mod.hSDM.poisson <- hSDM.poisson(counts=Data$Y,
-                                 suitability=~X1+X2,
-                                 data=Data, burnin=1000,
-                                 mcmc=1000, thin=1,
-                                 beta.start=beta.hat.glm,
+mod.hSDM.poisson <- hSDM.poisson(counts=data.obs$Y,
+                                 suitability=~x1+x2,
+                                 data=data.obs,
+                                 suitability.pred=NULL,
+                                 burnin=1000, mcmc=1000, thin=1,
+                                 beta.start=0,
                                  mubeta=0, Vbeta=1.0E6,
-                                 seed=1234, verbose=1)
+                                 seed=1234, verbose=1,
+                                 save.p=0)
 
 #==========
 #== Outputs
+
+#= Parameter estimates
 summary(mod.hSDM.poisson$mcmc)
 pdf(file="Posteriors_hSDM.poisson.pdf")
 plot(mod.hSDM.poisson$mcmc)
 dev.off()
-summary(mod.hSDM.poisson$prob.p.pred)
+
+#== glm resolution to compare
+mod.glm <- glm(Y~x1+x2,family="poisson",data=data.obs)
+summary(mod.glm)
+
+#= Predictions
+summary(mod.hSDM.poisson$lambda.latent)
+summary(mod.hSDM.poisson$lambda.pred)
+pdf(file="Pred-Init.pdf")
+plot(lambda,mod.hSDM.poisson$lambda.pred)
+abline(a=0,b=1,col="red")
+dev.off()
 
 }
 
@@ -171,6 +201,7 @@ summary(mod.hSDM.poisson$prob.p.pred)
 \keyword{Poisson regression}
 \keyword{biodiversity}
 \keyword{species distribution models}
+\keyword{hierarchical Bayesian models}
 \keyword{MCMC}
 \keyword{Markov Chains Monte Carlo}
 \keyword{Metropolis algorithm}
