@@ -1,23 +1,69 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 
 
 
 <title>Publications</title>
 
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
 
 
 
 
+
+
+<style type="text/css">
+/* for pandoc --citeproc since 2.11 */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
 
 <style type="text/css">body {
 background-color: #fff;
@@ -29,9 +75,6 @@ padding-right: 2em;
 font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 font-size: 14px;
 line-height: 1.35;
-}
-#header {
-text-align: center;
 }
 #TOC {
 clear: both;
@@ -200,7 +243,8 @@ code > span.st { color: #d14; }
 code > span.co { color: #888888; font-style: italic; } 
 code > span.ot { color: #007020; } 
 code > span.al { color: #ff0000; font-weight: bold; } 
-code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
 </style>
 
 
@@ -217,75 +261,239 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 
 
-<p>Updated list of scientific articles using or citing <code>hSDM</code> is available on <a href="https://scholar.google.fr/scholar?start=0&amp;hl=fr&amp;as_sdt=2005&amp;cites=13416572550730321875&amp;scipsc=">Google Scholar</a>.</p>
-<p><strong>Articles using hSDM</strong>: <span class="citation">Domisch <em>et al.</em> (<a href="#ref-Domisch2019b">2019</a>)</span>, <span class="citation">Domisch <em>et al.</em> (<a href="#ref-Domisch2019b">2019</a>)</span>, <span class="citation">DellApa <em>et al.</em> (<a href="#ref-DellApa2018">2018</a>)</span>, <span class="citation">Specht (<a href="#ref-Specht2018">2018</a>)</span>, <span class="citation">Humphreys (<a href="#ref-Humphreys2018">2018</a>)</span>, <span class="citation">Pennino <em>et al.</em> (<a href="#ref-Pennino2017a">2017</a><a href="#ref-Pennino2017a">b</a>)</span>, <span class="citation">Costa, Pennino &amp; Mendes (<a href="#ref-Costa2017">2017</a>)</span>, <span class="citation">Pennino <em>et al.</em> (<a href="#ref-Pennino2017b">2017</a><a href="#ref-Pennino2017b">a</a>)</span>, <span class="citation">Plumptre <em>et al.</em> (<a href="#ref-Plumptre2016">2016</a>)</span>, <span class="citation">Vilela <em>et al.</em> (<a href="#ref-Vilela2016">2016</a>)</span>, <span class="citation">Wilson &amp; Jetz (<a href="#ref-Wilson2016">2016</a>)</span>, <span class="citation">Domisch, Wilson &amp; Jetz (<a href="#ref-Domisch2016">2016</a>)</span></p>
-<p><strong>Articles citing hSDM</strong>: <span class="citation">Clark &amp; Altwegg (<a href="#ref-Clark2019">2019</a>)</span>, <span class="citation">Martínez-Minaya <em>et al.</em> (<a href="#ref-MartinezMinaya2018">2018</a>)</span>, <span class="citation">Herrando <em>et al.</em> (<a href="#ref-Herrando2017">2017</a>)</span>, <span class="citation">Farley (<a href="#ref-Farley2017">2017</a>)</span>, <span class="citation">Guillera-Arroita (<a href="#ref-GuilleraArroita2016">2016</a>)</span>, <span class="citation">Bird <em>et al.</em> (<a href="#ref-Bird2014">2014</a>)</span>, <span class="citation">Lee (<a href="#ref-Lee2013">2013</a>)</span>, <span class="citation">Mazerolle (<a href="#ref-Mazerolle2015">2015</a>)</span>, <span class="citation">Thuiller (<a href="#ref-Thuiller2014">2014</a>)</span></p>
+<p>Updated list of scientific articles using or citing <code>hSDM</code>
+is available on <a href="https://scholar.google.fr/scholar?start=0&amp;hl=fr&amp;as_sdt=2005&amp;cites=13416572550730321875&amp;scipsc=">Google
+Scholar</a>.</p>
+<p><strong>Articles using hSDM</strong>: <span class="citation">Mertes,
+Jarzyna &amp; Jetz (<a href="#ref-Mertes2020" role="doc-biblioref">2020</a>)</span>, <span class="citation">Lambert
+<em>et al.</em> (<a href="#ref-Lambert2020" role="doc-biblioref">2020</a>)</span>, <span class="citation">Lopes
+<em>et al.</em> (<a href="#ref-Lopes2019" role="doc-biblioref">2019</a>)</span>, <span class="citation">Humphreys
+<em>et al.</em> (<a href="#ref-Humphreys2019" role="doc-biblioref">2019</a>)</span>, <span class="citation">Garriga
+<em>et al.</em> (<a href="#ref-Garriga2019" role="doc-biblioref">2019</a>)</span>, <span class="citation">Domisch
+<em>et al.</em> (<a href="#ref-Domisch2019b" role="doc-biblioref">2019</a>)</span>, <span class="citation">Domisch
+<em>et al.</em> (<a href="#ref-Domisch2019b" role="doc-biblioref">2019</a>)</span>, <span class="citation">DellApa
+<em>et al.</em> (<a href="#ref-DellApa2018" role="doc-biblioref">2018</a>)</span>, <span class="citation">Specht (<a href="#ref-Specht2018" role="doc-biblioref">2018</a>)</span>, <span class="citation">Humphreys (<a href="#ref-Humphreys2018" role="doc-biblioref">2018</a>)</span>, <span class="citation">Yesuf (<a href="#ref-Yesuf2018" role="doc-biblioref">2018</a>)</span>, <span class="citation">Pennino <em>et al.</em> (<a href="#ref-Pennino2017a" role="doc-biblioref">2017b</a>)</span>, <span class="citation">Costa,
+Pennino &amp; Mendes (<a href="#ref-Costa2017" role="doc-biblioref">2017</a>)</span>, <span class="citation">Pennino
+<em>et al.</em> (<a href="#ref-Pennino2017b" role="doc-biblioref">2017a</a>)</span>, <span class="citation">Plumptre
+<em>et al.</em> (<a href="#ref-Plumptre2016" role="doc-biblioref">2016</a>)</span>, <span class="citation">Vilela
+<em>et al.</em> (<a href="#ref-Vilela2016" role="doc-biblioref">2016</a>)</span>, <span class="citation">Wilson
+&amp; Jetz (<a href="#ref-Wilson2016" role="doc-biblioref">2016</a>)</span>, <span class="citation">Domisch,
+Wilson &amp; Jetz (<a href="#ref-Domisch2016" role="doc-biblioref">2016</a>)</span>.</p>
+<p><strong>Articles/books citing hSDM</strong>: <span class="citation">Croft &amp; Smith (<a href="#ref-Croft2019" role="doc-biblioref">2019</a>)</span>, <span class="citation">Clark
+&amp; Altwegg (<a href="#ref-Clark2019" role="doc-biblioref">2019</a>)</span>, <span class="citation">Botella
+(<a href="#ref-Botella2019" role="doc-biblioref">2019</a>)</span>, <span class="citation">Fletcher &amp; Fortin (<a href="#ref-Fletcher2018" role="doc-biblioref">2018</a>)</span>, <span class="citation">MacKenzie
+<em>et al.</em> (<a href="#ref-MacKenzie2018" role="doc-biblioref">2018</a>)</span>, <span class="citation">Martínez-Minaya <em>et al.</em> (<a href="#ref-MartinezMinaya2018" role="doc-biblioref">2018</a>)</span>,
+<span class="citation">Rao, Pyne &amp; Rao (<a href="#ref-Rao2017" role="doc-biblioref">2017</a>)</span>, <span class="citation">Lawson
+&amp; Lee (<a href="#ref-Lawson2017" role="doc-biblioref">2017</a>)</span>, <span class="citation">Herrando
+<em>et al.</em> (<a href="#ref-Herrando2017" role="doc-biblioref">2017</a>)</span>, <span class="citation">Farley (<a href="#ref-Farley2017" role="doc-biblioref">2017</a>)</span>, <span class="citation">Guillera-Arroita (<a href="#ref-GuilleraArroita2016" role="doc-biblioref">2016</a>)</span>, <span class="citation">Bird
+<em>et al.</em> (<a href="#ref-Bird2014" role="doc-biblioref">2014</a>)</span>, <span class="citation">Mazerolle
+(<a href="#ref-Mazerolle2015" role="doc-biblioref">2015</a>)</span>,
+<span class="citation">Thuiller (<a href="#ref-Thuiller2014" role="doc-biblioref">2014</a>)</span>, <span class="citation">Lee (<a href="#ref-Lee2013" role="doc-biblioref">2013</a>)</span>.</p>
 <div id="references" class="section level2 unnumbered">
-<h2>References</h2>
-<div id="refs" class="references">
-<div id="ref-Bird2014">
-<p>Bird, T.J., Bates, A.E., Lefcheck, J.S., Hill, N.A., Thomson, R.J., Edgar, G.J., Stuart-Smith, R.D., Wotherspoon, S., Krkosek, M., Stuart-Smith, J.F., Pecl, G.T., Barrett, N. &amp; Frusher, S. (2014) Statistical solutions for error and bias in global citizen science datasets. <em>Biological Conservation</em>, <strong>173</strong>, 144–154.</p>
+<h2 class="unnumbered">References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-Bird2014" class="csl-entry">
+Bird, T.J., Bates, A.E., Lefcheck, J.S., Hill, N.A., Thomson, R.J.,
+Edgar, G.J., Stuart-Smith, R.D., Wotherspoon, S., Krkosek, M.,
+Stuart-Smith, J.F., Pecl, G.T., Barrett, N. &amp; Frusher, S. (2014) <a href="https://doi.org/10.1016/j.biocon.2013.07.037">Statistical
+solutions for error and bias in global citizen science datasets</a>.
+<em>Biological Conservation</em>, <strong>173</strong>, 144–154.
 </div>
-<div id="ref-Clark2019">
-<p>Clark, A.E. &amp; Altwegg, R. (2019) Efficient bayesian analysis of occupancy models with logit link functions. <em>Ecology and Evolution</em>, <strong>9</strong>, 756–768.</p>
+<div id="ref-Botella2019" class="csl-entry">
+Botella, C. (2019) <em><a href="https://hal.archives-ouvertes.fr/tel-02519161"><span class="nocase">Statistical methods for spatial plant species
+distribution modeling based on large masses of uncertain observations
+from citizen-science programs</span></a></em>. Theses,
+<span>Universit<span>é</span> de Montpellier</span>.
 </div>
-<div id="ref-Costa2017">
-<p>Costa, T.L., Pennino, M.G. &amp; Mendes, L.F. (2017) Identifying ecological barriers in marine environment: The case study of dasyatis marianae. <em>Marine Environmental Research</em>, <strong>125</strong>, 1–9.</p>
+<div id="ref-Clark2019" class="csl-entry">
+Clark, A.E. &amp; Altwegg, R. (2019) <a href="https://doi.org/10.1002/ece3.4850">Efficient bayesian analysis of
+occupancy models with logit link functions</a>. <em>Ecology and
+Evolution</em>, <strong>9</strong>, 756–768.
 </div>
-<div id="ref-DellApa2018">
-<p>DellApa, A., Pennino, M.G., Bangley, C.W. &amp; Bonzek, C. (2018) A hierarchical bayesian modeling approach for the habitat distribution of smooth dogfish by sex and season in inshore coastal waters of the u.s. Northwest atlantic. <em>Marine and Coastal Fisheries</em>, <strong>10</strong>, 590–605.</p>
+<div id="ref-Costa2017" class="csl-entry">
+Costa, T.L.A., Pennino, M.G. &amp; Mendes, L.F. (2017) <a href="https://doi.org/10.1016/j.marenvres.2016.12.005">Identifying
+ecological barriers in marine environment: The case study of dasyatis
+marianae</a>. <em>Marine Environmental Research</em>,
+<strong>125</strong>, 1–9.
 </div>
-<div id="ref-Domisch2019b">
-<p>Domisch, S., Friedrichs, M., Hein, T., Borgwardt, F., Wetzig, A., Jähnig, S.C. &amp; Langhans, S.D. (2019) Spatially explicit species distribution models: A missed opportunity in conservation planning? ed G. Iacona. <em>Diversity and Distributions</em>, <strong>25</strong>, 758–769.</p>
+<div id="ref-Croft2019" class="csl-entry">
+Croft, S. &amp; Smith, G.C. (2019) <a href="https://doi.org/10.1101/656629">Structuring the unstructured:
+Estimating species-specific absence from multi-species presence data to
+inform pseudo-absence selection in species distribution models</a>.
+<em>bioRxiv</em>.
 </div>
-<div id="ref-Domisch2016">
-<p>Domisch, S., Wilson, A.M. &amp; Jetz, W. (2016) Model-based integration of observed and expert-based information for assessing the geographic and environmental distribution of freshwater species. <em>Ecography</em>, <strong>39</strong>, 1078–1088.</p>
+<div id="ref-DellApa2018" class="csl-entry">
+DellApa, A., Pennino, M.G., Bangley, C.W. &amp; Bonzek, C. (2018) <a href="https://doi.org/10.1002/mcf2.10051">A hierarchical bayesian
+modeling approach for the habitat distribution of smooth dogfish by sex
+and season in inshore coastal waters of the u.s. Northwest atlantic</a>.
+<em>Marine and Coastal Fisheries</em>, <strong>10</strong>, 590–605.
 </div>
-<div id="ref-Farley2017">
-<p>Farley, S.S. (2017) <em>A General Framework for Predicting the Optimal Computing Configurations for Climate-Driven Ecological Forecasting Models</em>. PhD thesis, University of Wisconsin-Madison.</p>
+<div id="ref-Domisch2019b" class="csl-entry">
+Domisch, S., Friedrichs, M., Hein, T., Borgwardt, F., Wetzig, A.,
+Jähnig, S.C. &amp; Langhans, S.D. (2019) <a href="https://doi.org/10.1111/ddi.12891">Spatially explicit species
+distribution models: A missed opportunity in conservation planning?</a>
+ed G. Iacona. <em>Diversity and Distributions</em>, <strong>25</strong>,
+758–769.
 </div>
-<div id="ref-GuilleraArroita2016">
-<p>Guillera-Arroita, G. (2016) Modelling of species distributions, range dynamics and communities under imperfect detection: Advances, challenges and opportunities. <em>Ecography</em>, <strong>40</strong>, 281–295.</p>
+<div id="ref-Domisch2016" class="csl-entry">
+Domisch, S., Wilson, A.M. &amp; Jetz, W. (2016) <a href="https://doi.org/10.1111/ecog.01925">Model-based integration of
+observed and expert-based information for assessing the geographic and
+environmental distribution of freshwater species</a>.
+<em>Ecography</em>, <strong>39</strong>, 1078–1088.
 </div>
-<div id="ref-Herrando2017">
-<p>Herrando, S., Keller, V., Voříšek, P., Kipson, M., Franch, M., Anton, M., Pla, M., Villero, D., Sierdsema, H., Kampichler, C. &amp; others. (2017) High resolution maps for the second european breeding bird atlas: A first provision of standardised data and pilot modelled maps. <em>Vogelwelt</em>, <strong>137</strong>, 33–41.</p>
+<div id="ref-Farley2017" class="csl-entry">
+Farley, S.S. (2017) <em>A General Framework for Predicting the Optimal
+Computing Configurations for Climate-Driven Ecological Forecasting
+Models</em>. PhD thesis, University of Wisconsin-Madison.
 </div>
-<div id="ref-Humphreys2018">
-<p>Humphreys, J.M. (2018) <em>Traits, Species, and Communities: Integrative Bayesian Approaches to Ecological Biogeography Across Geographic, Environmental, Phylogenetic, and Morphological Space</em>. PhD thesis, The Florida State University.</p>
+<div id="ref-Fletcher2018" class="csl-entry">
+Fletcher, R. &amp; Fortin, M.-J. (2018) <em><a href="https://doi.org/10.1007/978-3-030-01989-1">Spatial Ecology and
+Conservation Modeling</a></em>. Springer International Publishing.
 </div>
-<div id="ref-Lee2013">
-<p>Lee, D. (2013) CARBayes: AnRPackage for bayesian spatial modeling with conditional autoregressive priors. <em>Journal of Statistical Software</em>, <strong>55</strong>.</p>
+<div id="ref-Garriga2019" class="csl-entry">
+Garriga, R.M., Marco, I., Casas-Díaz, E., Acevedo, P., Amarasekaran, B.,
+Cuadrado, L. &amp; Humle, T. (2019) <a href="https://doi.org/10.1371/journal.pone.0215545">Factors influencing
+wild chimpanzee (pan troglodytes verus) relative abundance in an
+agriculture-swamp matrix outside protected areas</a> ed B.-S. Yue.
+<em><span>PLOS</span> <span>ONE</span></em>, <strong>14</strong>,
+e0215545.
 </div>
-<div id="ref-MartinezMinaya2018">
-<p>Martínez-Minaya, J., Cameletti, M., Conesa, D. &amp; Pennino, M.G. (2018) Species distribution modeling: A statistical review with focus in spatio-temporal issues. <em>Stochastic Environmental Research and Risk Assessment</em>, <strong>32</strong>, 3227–3244.</p>
+<div id="ref-GuilleraArroita2016" class="csl-entry">
+Guillera-Arroita, G. (2016) <a href="https://doi.org/10.1111/ecog.02445">Modelling of species
+distributions, range dynamics and communities under imperfect detection:
+Advances, challenges and opportunities</a>. <em>Ecography</em>,
+<strong>40</strong>, 281–295.
 </div>
-<div id="ref-Mazerolle2015">
-<p>Mazerolle, M.J. (2015) Estimating detectability and biological parameters of interest with the use of the r environment. <em>Journal of Herpetology</em>, <strong>49</strong>, 541–559.</p>
+<div id="ref-Herrando2017" class="csl-entry">
+Herrando, S., Keller, V., Voříšek, P., Kipson, M., Franch, M., Anton,
+M., Pla, M., Villero, D., Sierdsema, H., Kampichler, C. &amp; others.
+(2017) High resolution maps for the second european breeding bird atlas:
+A first provision of standardised data and pilot modelled maps.
+<em>Vogelwelt</em>, <strong>137</strong>, 33–41.
 </div>
-<div id="ref-Pennino2017b">
-<p>Pennino, M.G., Mérigot, B., Fonseca, V.P., Monni, V. &amp; Rotta, A. (2017a) Habitat modeling for cetacean management: Spatial distribution in the southern pelagos sanctuary (mediterranean sea). <em>Deep Sea Research Part II: Topical Studies in Oceanography</em>, <strong>141</strong>, 203–211.</p>
+<div id="ref-Humphreys2018" class="csl-entry">
+Humphreys, J.M. (2018) <em>Traits, Species, and Communities: Integrative
+Bayesian Approaches to Ecological Biogeography Across Geographic,
+Environmental, Phylogenetic, and Morphological Space</em>. PhD thesis,
+The Florida State University.
 </div>
-<div id="ref-Pennino2017a">
-<p>Pennino, M.G., Vilela, R., Valeiras, J. &amp; Bellido, J.M. (2017b) Discard management: A spatial multi-criteria approach. <em>Marine Policy</em>, <strong>77</strong>, 144–151.</p>
+<div id="ref-Humphreys2019" class="csl-entry">
+Humphreys, J.M., Elsner, J.B., Jagger, T.H. &amp; Steppan, S.J. (2019)
+<a href="https://doi.org/10.7287/peerj.preprints.28001v1">Integrated
+modeling of phylogenies, species traits, and environmental gradients to
+better predict biogeographic distributions</a>. <em>Peerj preprint</em>.
 </div>
-<div id="ref-Plumptre2016">
-<p>Plumptre, A.J., Nixon, S., Kujirakwinja, D.K., Vieilledent, G., Critchlow, R., Williamson, E.A., Nishuli, R., Kirkby, A.E. &amp; Hall, J.S. (2016) Catastrophic decline of worlds largest primate: 80% loss of grauers gorilla (gorilla beringei graueri) population justifies critically endangered status ed A. Margalida. <em>PLOS ONE</em>, <strong>11</strong>, e0162697.</p>
+<div id="ref-Lambert2020" class="csl-entry">
+Lambert, C., Authier, M., Dorémus, G., Laran, S., Panigada, S., Spitz,
+J., Canneyt, O.V. &amp; Ridoux, V. (2020) <a href="https://doi.org/10.1016/j.envpol.2020.114430">Setting the scene
+for mediterranean litterscape management: The first basin-scale
+quantification and mapping of floating marine debris</a>.
+<em>Environmental Pollution</em>, 114430.
 </div>
-<div id="ref-Specht2018">
-<p>Specht, H. (2018) Occupancy survey data and analysis code for shorebird and waterfowl habitat use in nw north dakota, 2014-2015.</p>
+<div id="ref-Lawson2017" class="csl-entry">
+Lawson, A. &amp; Lee, D. (2017) <a href="https://doi.org/10.1016/bs.host.2017.05.001">Bayesian disease
+mapping for public health</a>. <em><span class="nocase">Handbook of
+Statistics 36, Disease Modelling and Public Health, Part A</span></em>,
+pp. 443–481. Elsevier.
 </div>
-<div id="ref-Thuiller2014">
-<p>Thuiller, W. (2014) Editorial commentary on ‘BIOMOD - optimizing predictions of species distributions and projecting potential future shifts under global change’. <em>Global Change Biology</em>, <strong>20</strong>, 3591–3592.</p>
+<div id="ref-Lee2013" class="csl-entry">
+Lee, D. (2013) <a href="https://doi.org/10.18637/jss.v055.i13"><span>CARBayes</span>:
+<span>An R Package</span> for bayesian spatial modeling with conditional
+autoregressive priors</a>. <em>Journal of Statistical Software</em>,
+<strong>55</strong>.
 </div>
-<div id="ref-Vilela2016">
-<p>Vilela, R., Pena, U., Esteban, R. &amp; Koemans, R. (2016) Bayesian spatial modeling of cetacean sightings during a seismic acquisition survey. <em>Marine Pollution Bulletin</em>, <strong>109</strong>, 512–520.</p>
+<div id="ref-Lopes2019" class="csl-entry">
+Lopes, P.F.M., Verba, J.T., Begossi, A. &amp; Pennino, M.G. (2019) <a href="https://doi.org/10.1139/cjfas-2018-0148">Predicting species
+distribution from fishers’ local ecological knowledge: A new alternative
+for data-poor management</a>. <em>Canadian Journal of Fisheries and
+Aquatic Sciences</em>, <strong>76</strong>, 1423–1431.
 </div>
-<div id="ref-Wilson2016">
-<p>Wilson, A.M. &amp; Jetz, W. (2016) Remotely sensed high-resolution global cloud dynamics for predicting ecosystem and biodiversity distributions ed M. Loreau. <em>PLOS Biology</em>, <strong>14</strong>, e1002415.</p>
+<div id="ref-MacKenzie2018" class="csl-entry">
+MacKenzie, D.I., Nichols, J.D., Royle, J.A., Pollock, K.H., Bailey, L.
+&amp; Hines, J.E. (2018) <em><a href="https://doi.org/10.1016/c2012-0-01164-7">Occupancy Estimation and
+Modeling: Inferring Patterns and Dynamics of Species Occurrence, Second
+Edition</a></em>. Elsevier.
+</div>
+<div id="ref-MartinezMinaya2018" class="csl-entry">
+Martínez-Minaya, J., Cameletti, M., Conesa, D. &amp; Pennino, M.G.
+(2018) <a href="https://doi.org/10.1007/s00477-018-1548-7">Species
+distribution modeling: A statistical review with focus in
+spatio-temporal issues</a>. <em>Stochastic Environmental Research and
+Risk Assessment</em>, <strong>32</strong>, 3227–3244.
+</div>
+<div id="ref-Mazerolle2015" class="csl-entry">
+Mazerolle, M.J. (2015) <a href="https://doi.org/10.1670/14-075">Estimating detectability and
+biological parameters of interest with the use of the r environment</a>.
+<em>Journal of Herpetology</em>, <strong>49</strong>, 541–559.
+</div>
+<div id="ref-Mertes2020" class="csl-entry">
+Mertes, K., Jarzyna, M.A. &amp; Jetz, W. (2020) <a href="https://doi.org/10.1002/eap.2117">Hierarchical multi-grain models
+improve descriptions of species’ environmental associations,
+distribution, and abundance</a>. <em>Ecological Applications</em>,
+<strong>n/a</strong>.
+</div>
+<div id="ref-Pennino2017b" class="csl-entry">
+Pennino, M.G., Mérigot, B., Fonseca, V.P., Monni, V. &amp; Rotta, A.
+(2017a) <a href="https://doi.org/10.1016/j.dsr2.2016.07.006">Habitat
+modeling for cetacean management: Spatial distribution in the southern
+pelagos sanctuary (mediterranean sea)</a>. <em>Deep Sea Research Part
+<span>II</span>: Topical Studies in Oceanography</em>,
+<strong>141</strong>, 203–211.
+</div>
+<div id="ref-Pennino2017a" class="csl-entry">
+Pennino, M.G., Vilela, R., Valeiras, J. &amp; Bellido, J.M. (2017b) <a href="https://doi.org/10.1016/j.marpol.2016.12.022">Discard management:
+A spatial multi-criteria approach</a>. <em>Marine Policy</em>,
+<strong>77</strong>, 144–151.
+</div>
+<div id="ref-Plumptre2016" class="csl-entry">
+Plumptre, A.J., Nixon, S., Kujirakwinja, D.K., Vieilledent, G.,
+Critchlow, R., Williamson, E.A., Nishuli, R., Kirkby, A.E. &amp; Hall,
+J.S. (2016) <a href="https://doi.org/10.1371/journal.pone.0162697">Catastrophic decline
+of world<span></span>s largest primate: 80<span>%</span> loss of
+grauer<span></span>s gorilla (gorilla beringei graueri) population
+justifies critically endangered status</a> ed A. Margalida.
+<em><span>PLOS</span> <span>ONE</span></em>, <strong>11</strong>,
+e0162697.
+</div>
+<div id="ref-Rao2017" class="csl-entry">
+Rao, A.S.R.S., Pyne, S. &amp; Rao, C.R. (2017) <em><a href="https://books.google.fr/books?id=cJSZDgAAQBAJ">Disease Modelling
+and Public Health, Part a</a></em>. Elsevier Science.
+</div>
+<div id="ref-Specht2018" class="csl-entry">
+Specht, H. (2018) <a href="https://doi.org/10.13020/2vq4-fn73">Occupancy
+survey data and analysis code for shorebird and waterfowl habitat use in
+NW north dakota, 2014-2015</a>.
+</div>
+<div id="ref-Thuiller2014" class="csl-entry">
+Thuiller, W. (2014) <a href="https://doi.org/10.1111/gcb.12728">Editorial commentary on
+<span>‘<span>BIOMOD</span> - optimizing predictions of species
+distributions and projecting potential future shifts under global
+change’</span></a>. <em>Global Change Biology</em>, <strong>20</strong>,
+3591–3592.
+</div>
+<div id="ref-Vilela2016" class="csl-entry">
+Vilela, R., Pena, U., Esteban, R. &amp; Koemans, R. (2016) <a href="https://doi.org/10.1016/j.marpolbul.2016.05.011">Bayesian spatial
+modeling of cetacean sightings during a seismic acquisition survey</a>.
+<em>Marine Pollution Bulletin</em>, <strong>109</strong>, 512–520.
+</div>
+<div id="ref-Wilson2016" class="csl-entry">
+Wilson, A.M. &amp; Jetz, W. (2016) <a href="https://doi.org/10.1371/journal.pbio.1002415">Remotely sensed
+high-resolution global cloud dynamics for predicting ecosystem and
+biodiversity distributions</a> ed M. Loreau. <em><span>PLOS</span>
+Biology</em>, <strong>14</strong>, e1002415.
+</div>
+<div id="ref-Yesuf2018" class="csl-entry">
+Yesuf, G.U. (2018) <em><a href="http://eprints.kingston.ac.uk/id/eprint/43324">Modelling Future
+Range Shift Gaps in a Biodiversity Hotspot: A Case Study of Critically
+Endangered Plants in Madagascar</a></em>. PhD thesis, Kingston
+University.
 </div>
 </div>
 </div>
 
+
+
+<!-- code folding -->
 
 
 <!-- dynamically load mathjax for compatibility with self-contained -->

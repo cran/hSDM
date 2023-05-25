@@ -1,9 +1,11 @@
 Package: hSDM
 Type: Package
 Title: Hierarchical Bayesian Species Distribution Models
-Version: 1.4.1
-Date: 2019-05-12
+Version: 1.4.2
+Date: 2023-05-25
 Imports: coda
+NeedsCompilation: yes
+SystemRequirements: GNU GSL
 Suggests: knitr, raster, sp, rmarkdown, bookdown
 Authors@R: c(
   person("Ghislain", "Vieilledent", role=c("aut","cre"), 
@@ -22,17 +24,15 @@ Authors@R: c(
   person("CIRAD", role=c("cph", "fnd"))
   )
 Maintainer: Ghislain Vieilledent <ghislain.vieilledent@cirad.fr>
-Description: User-friendly and fast set of functions for estimating parameters of hierarchical Bayesian species distribution models (Latimer et al. 2006 <doi:10.1890/04-0609>). Such models allow interpreting the observations (occurrence and abundance of a species) as a result of several hierarchical processes including ecological processes (habitat suitability, spatial dependence and anthropogenic disturbance) and observation processes (species detectability). Hierarchical species distribution models are essential for accurately characterizing the environmental response of species, predicting their probability of occurrence, and assessing uncertainty in the model results.
-License: GPL-3 | file LICENSE
-URL: https://ecology.ghislainv.fr/hSDM,
-        https://github.com/ghislainv/hSDM
-BugReports: https://github.com/ghislainv/hSDM/issues
+Description: User-friendly and fast set of functions for estimating parameters of hierarchical Bayesian species distribution models (Latimer and others 2006 <doi:10.1890/04-0609>). Such models allow interpreting the observations (occurrence and abundance of a species) as a result of several hierarchical processes including ecological processes (habitat suitability, spatial dependence and anthropogenic disturbance) and observation processes (species detectability). Hierarchical species distribution models are essential for accurately characterizing the environmental response of species, predicting their probability of occurrence, and assessing uncertainty in the model results.
+License: GPL-3
+URL: https://ecology.ghislainv.fr/hSDM/,
+        https://github.com/ghislainv/hSDM/
+BugReports: https://github.com/ghislainv/hSDM/issues/
 LazyLoad: yes
 Encoding: UTF-8
-RoxygenNote: 6.1.1
 VignetteBuilder: knitr
-NeedsCompilation: yes
-Packaged: 2019-05-12 19:08:15 UTC; ghislain
+Packaged: 2023-05-25 09:58:05 UTC; ghislain
 Author: Ghislain Vieilledent [aut, cre]
     (<https://orcid.org/0000-0002-1685-4997>),
   Matthieu Autier [ctb],
@@ -47,4 +47,4 @@ Author: Ghislain Vieilledent [aut, cre]
   Shanshan Wu [ctb],
   CIRAD [cph, fnd]
 Repository: CRAN
-Date/Publication: 2019-05-12 23:30:09 UTC
+Date/Publication: 2023-05-25 13:00:02 UTC

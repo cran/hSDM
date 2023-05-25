@@ -1,4 +1,4 @@
-## ----setup, include=FALSE------------------------------------------------
+## ----setup, include=FALSE-----------------------------------------------------
 knitr::opts_chunk$set(
 	fig.align = "center",
 	fig.width = 6, fig.height = 6,
@@ -11,18 +11,18 @@ knitr::opts_chunk$set(
 ## ----Willow-tit, echo=FALSE, out.width="\\textwidth", fig.cap="(ref:cap-Willow-tit)"----
 knitr::include_graphics("figures/Poecile_montanus.jpg")
 
-## ----libraries-----------------------------------------------------------
+## ----libraries----------------------------------------------------------------
 # Load libraries
 library(sp)
 library(raster)
 library(hSDM)
 
-## ----Kery2010-data-------------------------------------------------------
+## ----Kery2010-data------------------------------------------------------------
 # Load Kéry et al. 2010 data
 data(data.Kery2010, package="hSDM")
 head(data.Kery2010)
 
-## ----normalizing---------------------------------------------------------
+## ----normalizing--------------------------------------------------------------
 # Normalized variables
 elev.mean <- mean(data.Kery2010$elevation)
 elev.sd <- sd(data.Kery2010$elevation)
@@ -59,7 +59,7 @@ par(mar=c(0.1,0.1,0.1,0.1))
 plot(landscape.po)
 points(sites.sp, pch=16, cex=1, col="black")
 
-## ----Neighborhood--------------------------------------------------------
+## ----Neighborhood-------------------------------------------------------------
 # Neighborhood
 # Rasters must be projected to correctly compute the neighborhood
 crs(landscape) <- '+proj=utm +zone=1'
@@ -74,7 +74,7 @@ n.neighbors <- as.data.frame(table(as.factor(neighbors.mat[,1])))[,2]
 # Adjacent cells
 adj <- neighbors.mat[,2]
 
-## ----Arranging-data------------------------------------------------------
+## ----Arranging-data-----------------------------------------------------------
 # Arranging data
 # data.obs
 nsite <- length(data.Kery2010$coordx)
@@ -89,7 +89,7 @@ data.suit <- data.Kery2010[c("coordx","coordy","elevation")]
 data.suit$cells <- cells
 data.suit <- data.suit[-139,] # Removing site 139 with no juldate
 
-## ----Kery2010-pois-mod, cache=TRUE---------------------------------------
+## ----Kery2010-pois-mod, cache=TRUE--------------------------------------------
 # hSDM.poisson
 data.pois <- data.obs
 data.pois$elevation <- data.suit$elevation[as.numeric(as.factor(data.obs$site))]
@@ -97,11 +97,11 @@ mod.Kery2010.pois <- hSDM.poisson(counts=data.pois$count,
                                   suitability=~elevation+I(elevation^2),
                                   data=data.pois, beta.start=0)
 
-## ----Kery2010-pois-mcmc, results="markup"--------------------------------
+## ----Kery2010-pois-mcmc, results="markup"-------------------------------------
 # Outputs
 summary(mod.Kery2010.pois$mcmc)
 
-## ----Kery2010-pois-pred--------------------------------------------------
+## ----Kery2010-pois-pred-------------------------------------------------------
 # Predictions
 npred <- 100
 nsamp <- dim(mod.Kery2010.pois$mcmc)[1]
@@ -119,7 +119,7 @@ N.est.pois <- apply(N,2,mean)
 N.q1.pois <- apply(N,2,quantile,0.025)
 N.q2.pois <- apply(N,2,quantile,0.975)
 
-## ----Kery2010-Nmix-mod, cache=TRUE---------------------------------------
+## ----Kery2010-Nmix-mod, cache=TRUE--------------------------------------------
 # hSDM.Nmixture
 mod.Kery2010.Nmix <- hSDM.Nmixture(# Observations
                      counts=data.obs$count,
@@ -143,11 +143,11 @@ mod.Kery2010.Nmix <- hSDM.Nmixture(# Observations
                      seed=1234, verbose=1,
                      save.p=0, save.N=0)
 
-## ----Kery2010-Nmix-mcmc, results="markup"--------------------------------
+## ----Kery2010-Nmix-mcmc, results="markup"-------------------------------------
 # Outputs
 summary(mod.Kery2010.Nmix$mcmc)
 
-## ----Kery2010-Nmix-pred--------------------------------------------------
+## ----Kery2010-Nmix-pred-------------------------------------------------------
 # Predictions
 nsamp <- dim(mod.Kery2010.Nmix$mcmc)[1]
 # Abundance-elevation
@@ -174,7 +174,7 @@ delta.est.Nmix <- apply(delta,2,mean)
 delta.q1.Nmix <- apply(delta,2,quantile,0.025)
 delta.q2.Nmix <- apply(delta,2,quantile,0.975)
 
-## ----Kery2010-Nmix-iCAR-mod, cache=TRUE----------------------------------
+## ----Kery2010-Nmix-iCAR-mod, cache=TRUE---------------------------------------
 # hSDM.Nmixture.iCAR
 mod.Kery2010.Nmix.iCAR <- hSDM.Nmixture.iCAR(# Observations
                             counts=data.obs$count,
@@ -202,7 +202,7 @@ mod.Kery2010.Nmix.iCAR <- hSDM.Nmixture.iCAR(# Observations
                             seed=1234, verbose=1,
                             save.rho=0, save.p=0, save.N=0)
 
-## ----Kery2010-Nmix-iCAR-mcmc,results="markup"----------------------------
+## ----Kery2010-Nmix-iCAR-mcmc,results="markup"---------------------------------
 summary(mod.Kery2010.Nmix.iCAR$mcmc)
 
 ## ----Kery2010-Nmix-iCAR-spatial-effects, out.width="\\textwidth", fig.width=9, fig.height=6, fig.cap="(ref:cap-spatial)"----
@@ -215,7 +215,7 @@ ma <- apply(sites.sp@data[,3:5],1,mean,na.rm=TRUE)
 points(sites.sp,pch=16,cex=0.5)
 points(sites.sp,pch=1,cex=ma/2)
 
-## ----Kery2010-Nmix-iCAR-pred---------------------------------------------
+## ----Kery2010-Nmix-iCAR-pred--------------------------------------------------
 # Predictions
 nsamp <- dim(mod.Kery2010.Nmix.iCAR$mcmc)[1]
 # Abundance-elevation
@@ -242,7 +242,7 @@ delta.est.Nmix.iCAR <- apply(delta,2,mean)
 delta.q1.Nmix.iCAR <- apply(delta,2,quantile,0.025)
 delta.q2.Nmix.iCAR <- apply(delta,2,quantile,0.975)
 
-## ----Kery2010-comp-abundance, fig.cap="(ref:cap-abundance)"--------------
+## ----Kery2010-comp-abundance, fig.cap="(ref:cap-abundance)"-------------------
 # Expected abundance - Elevation
 par(mar=c(4,4,1,1),cex=1.4,tcl=+0.5)
 plot(elev.seq,N.est.pois,type="l",
@@ -265,7 +265,7 @@ lines(elev.seq,N.est.Nmix.iCAR,lwd=2,col="dark green")
 #lines(elev.seq,N.q1.Nmix.iCAR,lty=3,lwd=1,col="dark green")
 #lines(elev.seq,N.q2.Nmix.iCAR,lty=3,lwd=1,col="dark green")
 
-## ----Kery2010-comp-detection, fig.cap="(ref:cap-detection)"--------------
+## ----Kery2010-comp-detection, fig.cap="(ref:cap-detection)"-------------------
 # Detection probability - Julian date
 par(mar=c(4,4,1,1),cex=1.4,tcl=+0.5)
 plot(juldate.seq,delta.est.Nmix,type="l",
