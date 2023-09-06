@@ -1,8 +1,8 @@
 Package: hSDM
 Type: Package
 Title: Hierarchical Bayesian Species Distribution Models
-Version: 1.4.3
-Date: 2023-08-19
+Version: 1.4.4
+Date: 2023-09-06
 Imports: coda
 NeedsCompilation: yes
 SystemRequirements: GNU GSL
@@ -32,7 +32,7 @@ BugReports: https://github.com/ghislainv/hSDM/issues/
 LazyLoad: yes
 Encoding: UTF-8
 VignetteBuilder: knitr
-Packaged: 2023-08-28 11:05:53 UTC; ghislain
+Packaged: 2023-09-06 14:13:35 UTC; ghislain
 Author: Ghislain Vieilledent [aut, cre]
     (<https://orcid.org/0000-0002-1685-4997>),
   Matthieu Autier [ctb],
@@ -47,4 +47,4 @@ Author: Ghislain Vieilledent [aut, cre]
   Shanshan Wu [ctb],
   CIRAD [cph, fnd]
 Repository: CRAN
-Date/Publication: 2023-08-28 11:30:05 UTC
+Date/Publication: 2023-09-06 15:20:02 UTC

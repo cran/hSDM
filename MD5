@@ -1,6 +1,6 @@
-f86e58d5ae2c20386a9cde6488188009 *DESCRIPTION
+c2439a75fa9728497d25a240c1835b8d *DESCRIPTION
 e219be6cd9a42f586de883e0a91ee2e1 *NAMESPACE
-e02f657e3af65df3e50a2fc7d4691373 *NEWS.md
+b11a91ee08502f123f28e8572d0a5046 *NEWS.md
 4f076c43bd8186318b25b44fbeed279e *R/hSDM.Nmixture.K.R
 1ebb134e7038073a304b000cd28f6789 *R/hSDM.Nmixture.R
 6fcd6f46171dc44fc998e3fdc77816c0 *R/hSDM.Nmixture.iCAR.R
@@ -20,7 +20,7 @@ e9a30a889872cff2c94586c7c960267c *R/hidden.R
 187bd407e14899a4ac94a26363e3ba40 *R/logit.R
 54d1a13d2ab3b35127ecd8fc37234fda *R/predict.hSDM.R
 a303e4d2d1ff3ac2b0c4c5094b28902b *R/zzz.R
-7321284bf1c61198c7407bf0373cb60a *README.md
+c39e29b40cd3bce11dd0105aa85ec37b *README.md
 b9142c237a88a8cb50c3c62d9f540ff0 *build/vignette.rds
 00ff91d67485e771ffbc2ed209144b00 *data/altitude.rda
 0722e927bb926b4ba43cbfb5b17a0081 *data/cfr.env.rda
@@ -31,10 +31,10 @@ b9142c237a88a8cb50c3c62d9f540ff0 *build/vignette.rds
 7b6154255afa1a078b259849a2d6c711 *data/punc10.rda
 551c18c58867354ec64a99c809a2a262 *inst/doc/hSDM.R
 836b25c298f4aa70317046a314d01a0a *inst/doc/hSDM.Rmd
-6b9209c8510511c2a7ea578d3dfc87e6 *inst/doc/hSDM.html
+a05c78b702c5bb847f1892b8ccfba55f *inst/doc/hSDM.html
 46750e778a5cdb4d65c347f8e43df623 *inst/doc/publications.R
 3e574a12baa61eb1cf3113b45c6eb043 *inst/doc/publications.Rmd
-332e20d0c8f0be4bf2bcfbc13ddfe9ad *inst/doc/publications.html
+48dc5eba24518f8f56f9681c4166b561 *inst/doc/publications.html
 a24f8af7537691bd08ecf7d129a48a53 *man/altitude.Rd
 73e99c54fa2d7d20eb845e296aa8582d *man/cfr.env.Rd
 e6b9f2efbe77ac057353c4cb11919ce6 *man/data.Kery2010.Rd
@@ -82,7 +82,7 @@ f817ba6306ecf1e79ce2611e25d80cc2 *src/hSDM_init.c
 dd3155e6f435c552fbadfdaa42b4d3d6 *src/useful.c
 de260eab7ca1cf0154c1fea6517c51f5 *src/useful.h
 50512989d3ed48b413781f40146fbb82 *vignettes/bib/biblio-hSDM.bib
-163a6b4aed2c32e3a8a3cbe6dae07c1a *vignettes/bib/biblio-publications.bib
+0d111a4446ae03dca45b97a55b9a161d *vignettes/bib/biblio-publications.bib
 b917b5aaefbf3265de6689f7d3948c4e *vignettes/bib/jae.bst
 b87a3db5150aab2aeb10449d55360844 *vignettes/bib/journal-of-applied-ecology.csl
 087a0b755f6e4038131d424f87f981b7 *vignettes/figures/Poecile_montanus.jpg
